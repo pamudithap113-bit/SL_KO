@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinhala ↔ Korean Glass Translator</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Sans+Sinhala:wght@300;400;500;600;700;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                        sinhala: ['Noto Sans Sinhala', 'sans-serif'],
+                        korean: ['Noto Sans KR', 'sans-serif'],
+                    },
+                    colors: {
+                        glass: {
+                            100: 'rgba(255, 255, 255, 0.05)',
+                            200: 'rgba(255, 255, 255, 0.08)',
+                            300: 'rgba(255, 255, 255, 0.12)',
+                            border: 'rgba(255, 255, 255, 0.18)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', 'Noto Sans Sinhala', 'Noto Sans KR', sans-serif;
+            background-color: #080c14;
+            color: #f1f5f9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Dynamic Floating Ambient Background Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.55;
+            pointer-events: none;
+            animation: moveOrb 16s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        .orb-cyan {
+            top: -10%;
+            left: -10%;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, #06b6d4 0%, #3b82f6 100%);
+            animation-duration: 18s;
+        }
+
+        .orb-purple {
+            bottom: -15%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #8b5cf6 0%, #ec4899 100%);
+            animation-duration: 22s;
+            animation-delay: -5s;
+        }
+
+        .orb-pink {
+            top: 35%;
+            left: 25%;
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, #f43f5e 0%, #a855f7 100%);
+            animation-duration: 14s;
+            animation-delay: -8s;
+        }
+
+        @keyframes moveOrb {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+            50% {
+                transform: translate(60px, -40px) scale(1.12);
+            }
+            100% {
+                transform: translate(-40px, 50px) scale(0.95);
+            }
+        }
+
+        /* Glassmorphism Card Effect */
+        .glass-box {
+            background: rgba(18, 26, 43, 0.55);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.1);
+        }
+
+        .glass-input {
+            background: rgba(10, 15, 29, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-input:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 20px rgba(129, 140, 248, 0.25);
+            outline: none;
+            background: rgba(10, 15, 29, 0.85);
+        }
+
+        /* Glowing Animated Buttons */
+        .btn-glow {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 6s ease infinite;
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 35px rgba(236, 72, 153, 0.6);
+        }
+
+        .btn-glow:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glass Icon Buttons */
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Toast Popup Animation */
+        #toast {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Pulse Ring for Swap Button */
+        .swap-btn {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(236, 72, 153, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s ease;
+        }
+
+        .swap-btn:hover {
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
+        }
+
+        /* Scrollbar Styling */
+        textarea::-webkit-scrollbar {
+            width: 6px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="p-3 sm:p-6 md:p-10">
+
+    <!-- Ambient Glowing Orbs -->
+    <div class="orb orb-cyan"></div>
+    <div class="orb orb-purple"></div>
+    <div class="orb orb-pink"></div>
+
+    <!-- Main Translator Container -->
+    <main class="w-full max-w-5xl glass-box rounded-3xl p-5 sm:p-8 md:p-10 relative z-10 my-auto">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/25 px-4 py-1.5 rounded-full mb-3 text-indigo-300 text-xs sm:text-sm font-medium tracking-wide shadow-inner">
+                <i class="fa-solid fa-sparkles text-amber-400"></i> Modern Glassmorphism AI Translator
+            </div>
+            
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-indigo-200 to-pink-300 font-sinhala leading-tight py-1">
+                සිංහල ↔ කොරියානු පරිවර්තකය
+            </h1>
+            
+            <p class="text-slate-400 text-xs sm:text-sm md:text-base mt-2 font-poppins font-light">
+                Instant Dual-Language Sinhala & Korean Translation System
+            </p>
+        </header>
+
+        <!-- Language Header Bar -->
+        <div class="flex items-center justify-between mb-4 px-2">
+            <!-- Source Badge -->
+            <div id="sourceBadge" class="flex items-center gap-2 text-indigo-300 font-semibold text-base sm:text-lg">
+                <span id="sourceDot" class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span id="sourceLangTitle">සිංහල (Sinhala)</span>
+            </div>
+
+            <!-- Language Swap Button -->
+            <button id="swapLanguagesBtn" title="Swap Languages (භාෂාව මාරු කරන්න)" class="swap-btn w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white shadow-lg cursor-pointer">
+                <i class="fa-solid fa-arrow-right-arrow-left text-sm sm:text-base"></i>
+            </button>
+
+            <!-- Target Badge -->
+            <div id="targetBadge" class="flex items-center gap-2 text-pink-300 font-semibold text-base sm:text-lg">
+                <span id="targetLangTitle">한국어 (Korean)</span>
+                <span id="targetDot" class="w-2.5 h-2.5 rounded-full bg-pink-500"></span>
+            </div>
+        </div>
+
+        <!-- Translation Text Areas Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">
+            
+            <!-- Source Input Box -->
+            <div class="flex flex-col gap-2">
+                <div class="relative group">
+                    <textarea 
+                        id="sourceInput" 
+                        class="glass-input w-full h-52 sm:h-60 p-4 sm:p-5 rounded-2xl text-base sm:text-lg text-slate-100 placeholder-slate-500 resize-none leading-relaxed" 
+                        placeholder="මෙතැන සටහන් කරන්න... (e.g. ආයුබෝවන් / 안녕하세요)"></textarea>
+
+                    <!-- Bottom Controls inside Input -->
+                    <div class="absolute bottom-3 right-3 left-3 flex items-center justify-between pointer-events-none">
+                        <span id="charCount" class="text-xs text-slate-400 font-mono bg-slate-900/60 px-2.5 py-1 rounded-lg border border-white/5 backdrop-blur-sm pointer-events-auto">
+                            0 අකුරු
+                        </span>
+                        
+                        <div class="flex items-center gap-2 pointer-events-auto">
+                            <button id="clearBtn" title="Clear text" class="icon-btn px-2.5 py-1.5 rounded-xl text-slate-300 hover:text-rose-400 text-xs sm:text-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-eraser"></i> <span class="hidden sm:inline">මකන්න</span>
+                            </button>
+                            <button id="speakSourceBtn" title="Listen" class="icon-btn p-2 rounded-xl text-slate-300 hover:text-cyan-300 text-xs sm:text-sm">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Output Box -->
+            <div class="flex flex-col gap-2">
+                <div class="relative group">
+                    <textarea 
+                        id="targetOutput" 
+                        readonly 
+                        class="glass-input w-full h-52 sm:h-60 p-4 sm:p-5 rounded-2xl text-base sm:text-lg text-pink-100 placeholder-slate-500 resize-none leading-relaxed" 
+                        placeholder="පරිවර්තනය මෙතැන දර්ශනය වේ..."></textarea>
+
+                    <!-- Loading Indicator Overlay -->
+                    <div id="loadingOverlay" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center gap-3 opacity-0 pointer-events-none transition-opacity duration-300">
+                        <div class="w-10 h-10 border-3 border-indigo-400/30 border-t-pink-500 rounded-full animate-spin"></div>
+                        <span class="text-xs text-indigo-200 font-medium tracking-wider">පරිවර්තනය වෙමින් පවතී...</span>
+                    </div>
+
+                    <!-- Bottom Controls inside Output -->
+                    <div class="absolute bottom-3 right-3 flex items-center gap-2">
+                        <button id="copyBtn" title="Copy Translation" class="icon-btn p-2 rounded-xl text-slate-300 hover:text-emerald-400 text-xs sm:text-sm">
+                            <i class="fa-solid fa-copy"></i>
+                        </button>
+                        <button id="speakTargetBtn" title="Listen" class="icon-btn p-2 rounded-xl text-slate-300 hover:text-pink-400 text-xs sm:text-sm">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Action Button -->
+        <div class="mt-7 text-center">
+            <button 
+                id="translateBtn" 
+                class="btn-glow text-white font-bold text-base sm:text-xl px-8 sm:px-12 py-3.5 sm:py-4 rounded-2xl w-full sm:w-auto inline-flex items-center justify-center gap-3 cursor-pointer">
+                <i class="fa-solid fa-wand-magic-sparkles text-lg sm:text-2xl"></i>
+                <span>පරිවර්තනය කරන්න (Translate)</span>
+            </button>
+            <p class="text-xs text-slate-400 mt-2 font-mono">
+                💡 ඉඟිය: <kbd class="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-slate-300">Ctrl</kbd> + <kbd class="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-slate-300">Enter</kbd> එබීමෙන්ද පරිවර්තනය කළ හැක.
+            </p>
+        </div>
+
+        <!-- Quick Phrases -->
+        <div class="mt-8 pt-6 border-t border-slate-700/40">
+            <h3 class="text-xs sm:text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-bolt-lightning text-amber-400"></i> ඉක්මන් වාක්‍ය (Quick Expressions):
+            </h3>
+            <div id="quickPhrasesContainer" class="flex flex-wrap gap-2">
+                <!-- Injected dynamically via JavaScript -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Floating Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-24 opacity-0 glass-box border border-emerald-500/40 text-emerald-300 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 z-50 pointer-events-none">
+        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <span id="toastMessage" class="text-xs sm:text-sm font-medium">Notification message</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Language States
+        let isSinhalaToKorean = true; // true: Sinhala -> Korean, false: Korean -> Sinhala
+
+        // DOM Elements
+        const sourceInput = document.getElementById('sourceInput');
+        const targetOutput = document.getElementById('targetOutput');
+        const translateBtn = document.getElementById('translateBtn');
+        const swapLanguagesBtn = document.getElementById('swapLanguagesBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const speakSourceBtn = document.getElementById('speakSourceBtn');
+        const speakTargetBtn = document.getElementById('speakTargetBtn');
+        const charCount = document.getElementById('charCount');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const quickPhrasesContainer = document.getElementById('quickPhrasesContainer');
+
+        const sourceLangTitle = document.getElementById('sourceLangTitle');
+        const targetLangTitle = document.getElementById('targetLangTitle');
+
+        // Quick Phrases Data
+        const phraseSets = {
+            si: [
+                { text: "ආයුබෝවන්", label: "ආයුබෝවන් (Hello)" },
+                { text: "ස්තූතියි", label: "ස්තූතියි (Thank you)" },
+                { text: "ඔබට කෙසේද?", label: "ඔබට කෙසේද? (How are you?)" },
+                { text: "සුභ උදෑසනක්", label: "සුභ උදෑසනක් (Good morning)" },
+                { text: "මම ඔබට ආදරෙයි", label: "මම ඔබට ආදරෙයි (I love you)" },
+                { text: "කරුණාකර මට උදව් කරන්න", label: "උදව් කරන්න (Help me)" },
+                { text: "මිල කීයද?", label: "මිල කීයද? (How much?)" }
+            ],
+            ko: [
+                { text: "안녕하세요", label: "안녕하세요 (Hello)" },
+                { text: "감사합니다", label: "감사합니다 (Thank you)" },
+                { text: "잘 지내셨어요?", label: "잘 지내셨어요? (How are you?)" },
+                { text: "좋은 아침입니다", label: "좋은 아침입니다 (Good morning)" },
+                { text: "사랑해요", label: "사랑해요 (I love you)" },
+                { text: "도와주세요", label: "도와주세요 (Help me)" },
+                { text: "얼마예요?", label: "얼마예요? (How much?)" }
+            ]
+        };
+
+        // Render Quick Phrases
+        function renderQuickPhrases() {
+            quickPhrasesContainer.innerHTML = '';
+            const currentPhrases = isSinhalaToKorean ? phraseSets.si : phraseSets.ko;
+
+            currentPhrases.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "icon-btn text-slate-300 hover:text-indigo-200 text-xs px-3 py-1.5 rounded-xl transition-all cursor-pointer";
+                btn.textContent = item.label;
+                btn.addEventListener('click', () => {
+                    sourceInput.value = item.text;
+                    updateCharCount();
+                    performTranslation();
+                });
+                quickPhrasesContainer.appendChild(btn);
+            });
+        }
+
+        // Toggle Language Direction
+        function toggleLanguages() {
+            isSinhalaToKorean = !isSinhalaToKorean;
+
+            if (isSinhalaToKorean) {
+                sourceLangTitle.textContent = "සිංහල (Sinhala)";
+                targetLangTitle.textContent = "한국어 (Korean)";
+                sourceInput.placeholder = "මෙතැන සටහන් කරන්න... (e.g. ආයුබෝවන්)";
+                targetOutput.placeholder = "한국어 번역이 여기에 나타납니다...";
+            } else {
+                sourceLangTitle.textContent = "한국어 (Korean)";
+                targetLangTitle.textContent = "සිංහල (Sinhala)";
+                sourceInput.placeholder = "여기에 입력하세요... (e.g. 안녕하세요)";
+                targetOutput.placeholder = "සිංහල පරිවර්තනය මෙතැන දර්ශනය වේ...";
+            }
+
+            // Swap values if there is content
+            const tempVal = sourceInput.value;
+            sourceInput.value = targetOutput.value;
+            targetOutput.value = tempVal;
+
+            updateCharCount();
+            renderQuickPhrases();
+            showToast("භාෂා දිශාව මාරු කරන ලදී (Language direction swapped)");
+        }
+
+        // Character Count
+        function updateCharCount() {
+            const count = sourceInput.value.length;
+            charCount.textContent = `${count} අකුරු`;
+        }
+
+        // Toast Popup
+        function showToast(msg) {
+            toastMessage.textContent = msg;
+            toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+            }, 3200);
+        }
+
+        // Perform Translation via MyMemory API
+        async function performTranslation() {
+            const text = sourceInput.value.trim();
+
+            if (!text) {
+                showToast("කරුණාකර පරිවර්තනය සඳහා යමක් ඇතුළත් කරන්න!");
+                return;
+            }
+
+            // Determine language pair
+            const langPair = isSinhalaToKorean ? 'si|ko' : 'ko|si';
+            const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langPair}`;
+
+            // Show Loader
+            loadingOverlay.classList.remove('opacity-0', 'pointer-events-none');
+            translateBtn.disabled = true;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data && data.responseData && data.responseData.translatedText) {
+                    targetOutput.value = data.responseData.translatedText;
+                } else {
+                    targetOutput.value = "සමාවන්න, පරිවර්තන ප්‍රතිඵලය සොයාගත නොහැකි විය.";
+                }
+            } catch (err) {
+                console.error("Translation Error:", err);
+                targetOutput.value = "ජාල දෝෂයකි. කරුණාකර ඔබගේ අන්තර්ජාල සම්බන්ධතාව පරීක්ෂා කරන්න.";
+            } finally {
+                loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
+                translateBtn.disabled = false;
+            }
+        }
+
+        // Copy Text to Clipboard
+        function copyToClipboard() {
+            const val = targetOutput.value.trim();
+            if (!val) {
+                showToast("පිටපත් කිරීමට පෙළක් නොමැත!");
+                return;
+            }
+
+            // Fallback for iFrame clipboard compatibility
+            const tempArea = document.createElement('textarea');
+            tempArea.value = val;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempArea);
+
+            showToast("පරිවර්තනය සාර්ථකව Copy කරගන්නා ලදී!");
+        }
+
+        // Text-To-Speech (Speech Synthesis)
+        function speak(text, lang) {
+            if (!('speechSynthesis' in window)) {
+                showToast("ඔබගේ බ්‍රවුසරය හඬ සංස්ලේෂණයට (TTS) සහාය නොදක්වයි.");
+                return;
+            }
+
+            if (!text || !text.trim()) {
+                showToast("ශ්‍රවණය කිරීමට පෙළක් නොමැත!");
+                return;
+            }
+
+            window.speechSynthesis.cancel(); // Stop active speech
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Event Listeners
+        sourceInput.addEventListener('input', updateCharCount);
+        translateBtn.addEventListener('click', performTranslation);
+        swapLanguagesBtn.addEventListener('click', toggleLanguages);
+        copyBtn.addEventListener('click', copyToClipboard);
+
+        clearBtn.addEventListener('click', () => {
+            sourceInput.value = '';
+            targetOutput.value = '';
+            updateCharCount();
+            sourceInput.focus();
+        });
+
+        speakSourceBtn.addEventListener('click', () => {
+            const lang = isSinhalaToKorean ? 'si-LK' : 'ko-KR';
+            speak(sourceInput.value, lang);
+        });
+
+        speakTargetBtn.addEventListener('click', () => {
+            const lang = isSinhalaToKorean ? 'ko-KR' : 'si-LK';
+            speak(targetOutput.value, lang);
+        });
+
+        // Keyboard Shortcut: Ctrl + Enter / Cmd + Enter
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                performTranslation();
+            }
+        });
+
+        // Initial Render
+        renderQuickPhrases();
+    </script>
+</body>
+</html>
